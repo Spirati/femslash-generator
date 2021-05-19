@@ -66,7 +66,7 @@ def are_you_a_real_human_woman_with_a_real_birthdate(page: WikiLink) -> Union[bo
     
     birth_year = birthday_tag.find("div", class_="pi-data-value").text
     first_year = re.search(R"\d{4}", birth_year)
-    if not first_year is None:
+    if not first_year is None and int(first_year[0]) > 1910:
         return int(first_year[0])
     else:
         return False
