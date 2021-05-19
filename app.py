@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from typing import Dict, Union
 import re
 import random
-import json
+from urllib import parse
 
 import requests
 
@@ -16,7 +16,7 @@ def create_app():
     def home_page():
         reference_year = int(request.args.get("reference_year", 2028))
         woman1, woman2, age1, age2 = random_pairing(women, reference_year)
-        return render_template("femslash.html", woman1=woman1, woman2=woman2, reference_year=reference_year, age1=age1, age2=age2)
+        return render_template("femslash.html", woman1=parse.unquote(woman1), woman2=parse.unquote(woman2), reference_year=reference_year, age1=age1, age2=age2)
 
     return app
 
@@ -74,13 +74,14 @@ def are_you_a_real_human_woman_with_a_real_birthdate(page: WikiLink) -> Union[bo
 def random_pairing(women: Dict[Name, Age], reference_year: int):
     candidates = list(women.keys())
 
-    candidate = random.choice(candidates)
+    candidates = list(filter(lambda candidate: reference_year - women[candidate] >= 16, candidates))
 
-    
+    candidate = random.choice(candidates)
 
     eligible_bachelorettes = list(filter(
         lambda bachelorette:
             bachelorette != candidate and
+            bachelorette.split(" ")[-1] != candidate.split(" ")[-1] and
             reference_year - women[bachelorette] > (7 + (reference_year - women[candidate])/2) and 
             reference_year - women[bachelorette] < (2 * (reference_year - women[candidate]) - 7) and
             reference_year - women[candidate] > (7 + (reference_year - women[bachelorette])/2) and 
