@@ -1,0 +1,7 @@
+<h1>LIST OF WOMEN</h1>
+<a href="/">Return home</a>
+<ul>
+{% for woman in women_list %}
+<li>{{woman}} (born {{women[woman]}})</li>
+{% endfor %}
+</ul>

@@ -16,7 +16,12 @@ def create_app():
     def home_page():
         reference_year = int(request.args.get("reference_year", 2028))
         woman1, woman2, age1, age2 = random_pairing(women, reference_year)
-        return render_template("femslash.html", woman1=parse.unquote(woman1), woman2=parse.unquote(woman2), reference_year=reference_year, age1=age1, age2=age2)
+        return render_template("femslash.html", woman1=woman1, woman2=woman2, reference_year=reference_year, age1=age1, age2=age2)
+
+    @app.route("/women")
+    def women_list():
+        sorted_women = list(sorted(list(women.keys()), key=lambda key: women[key]))
+        return render_template("character_list.html", women=women, women_list=sorted_women)
 
     return app
 
@@ -30,10 +35,7 @@ def get_women() -> Dict[Name, Age]:
     women_page = "https://aceattorney.fandom.com/wiki/Category:Female_characters"
 
     women_request = requests.get(women_page)
-    """
-    with open("all_women.html", "wb") as women_file:
-        women_file.write(women_request.content)
-    """
+
     women_parsed = BeautifulSoup(women_request.text, features="html5lib")
     
     all_letters = women_parsed("div", class_="category-page__members-wrapper")[2:] # exclude DGS and manga/stage characters
@@ -45,7 +47,7 @@ def get_women() -> Dict[Name, Age]:
     for i, link in enumerate(all_links):
         result = are_you_a_real_human_woman_with_a_real_birthdate(link)
         if result:
-            women[link.split("/")[-1].replace("_"," ")] = result
+            women[parse.unquote(link.split("/")[-1].replace("_"," "))] = result
 
         print("Processed {}/{} candidates ({:2.2f})".format(i+1, len(all_links), 100 * (i+1)/len(all_links)), end="\r")
 
