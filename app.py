@@ -86,9 +86,9 @@ def random_pairing(women: Dict[Name, Age], reference_year: int):
             bachelorette.split(" ")[-1] != candidate.split(" ")[-1] and
             {bachelorette, candidate} != {"Dahlia Hawthorne", "Iris"} and
             reference_year - women[bachelorette] > (7 + (reference_year - women[candidate])/2) and 
-            reference_year - women[bachelorette] < (2 * (reference_year - women[candidate]) - 7) and
+            reference_year - women[bachelorette] < (2 * (reference_year - women[candidate] - 7)) and
             reference_year - women[candidate] > (7 + (reference_year - women[bachelorette])/2) and 
-            reference_year - women[candidate] < (2 * (reference_year - women[bachelorette]) - 7) and
+            reference_year - women[candidate] < (2 * (reference_year - women[bachelorette] - 7)) and
             not ((reference_year - women[bachelorette] < 18 and reference_year - women[candidate] > 18) or (reference_year - women[bachelorette] > 18 and reference_year - women[candidate] < 18)),
         candidates
     ))
