@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from bs4 import BeautifulSoup
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 import re
 import random
 from urllib import parse
@@ -15,8 +15,9 @@ def create_app():
     @app.route("/")
     def home_page():
         reference_year = int(request.args.get("reference_year", 2028))
-        woman1, woman2, age1, age2 = random_pairing(women, reference_year)
-        return render_template("femslash.html", woman1=woman1, woman2=woman2, reference_year=reference_year, age1=age1, age2=age2)
+        polycule = int(request.args.get("polycule", 2))
+        picks, ages = random_pairing(women, reference_year, polycule)
+        return render_template("femslash.html", packed_women = tuple(zip(range(len(picks)), picks, ages)), reference_year=reference_year, polycule=polycule)
 
     @app.route("/women")
     def women_list():
@@ -73,7 +74,7 @@ def are_you_a_real_human_woman_with_a_real_birthdate(page: WikiLink) -> Union[bo
     else:
         return False
 
-def random_pairing(women: Dict[Name, Age], reference_year: int):
+def random_pairing(women: Dict[Name, Age], reference_year: int, polycule: int) -> Tuple[Tuple[Name], Tuple[Age]]:
     candidates = list(women.keys())
 
     candidates = list(filter(lambda candidate: reference_year - women[candidate] >= 16, candidates))
@@ -94,10 +95,22 @@ def random_pairing(women: Dict[Name, Age], reference_year: int):
         candidates
     ))
 
+    picks = set([candidate])
+
     if len(eligible_bachelorettes) == 0:
         return candidate, "No one...", reference_year - women[candidate], "N/A"
-    choice = random.choice(eligible_bachelorettes)
-    return candidate, choice, reference_year - women[candidate], reference_year - women[choice]
+    while len(picks) < polycule:
+        try:
+            choice = random.choice(eligible_bachelorettes)
+        except:
+            break
+        picks.add(choice)
+        eligible_bachelorettes.remove(choice)
+    
+    picks = tuple(picks)
+    ages = tuple([reference_year - women[pick] for pick in picks])
+
+    return picks, ages
 
     
 
