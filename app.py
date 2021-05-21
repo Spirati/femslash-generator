@@ -83,7 +83,7 @@ def valid_pairing(a: Name, b: Name, women: Dict[Name, Age], reference_year: int)
     } for name in (a,b)]
 
     related = a_obj["last_name"] == b_obj["last_name"]
-    fey_blood = {a_obj["last_name"], b_obj["last_name"]} in ({"Fey", "Hawthorne"}, {"Iris", "Fey"})
+    fey_blood = {a_obj["last_name"], b_obj["last_name"]} in ({"Fey", "Hawthorne"}, {"Iris", "Fey"}, {"Iris", "Hawthorne"})
     lower_a = a_obj["age"] < (7 + b_obj["age"]/2) # a is under the lower bound
     lower_b = b_obj["age"] < (7 + a_obj["age"]/2) # b is under the lower bound
     upper_a = a_obj["age"] > (2 * (b_obj["age"] - 7)) # a is over the upper bound
